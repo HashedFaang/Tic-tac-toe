@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let gameActive = true;
   let scores = { X: 0, O: 0 };
   let vsAI = false;
+  let aiDifficulty = "easy";
 
   const clickSound = new Audio("https://cdn.jsdelivr.net/gh/harshitsrepo/tic-sounds/click.mp3");
   const winSound = new Audio("https://cdn.jsdelivr.net/gh/harshitsrepo/tic-sounds/win.mp3");
@@ -21,13 +22,24 @@ document.addEventListener("DOMContentLoaded", () => {
     <label style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;">
       <input type="checkbox" id="aiToggle"> vs Computer
     </label>
+    <select id="difficulty" style="margin-left:10px;">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="expert">Expert</option>
+    </select>
   `;
   document.querySelector(".container").insertBefore(scoreDisplay, board);
 
   const aiToggle = document.getElementById("aiToggle");
+  const difficultySelect = document.getElementById("difficulty");
+
   aiToggle.addEventListener("change", () => {
     vsAI = aiToggle.checked;
     restartGame();
+  });
+
+  difficultySelect.addEventListener("change", () => {
+    aiDifficulty = difficultySelect.value;
   });
 
   function checkWinner() {
@@ -68,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!gameActive || cells[index]) return;
     makeMove(index, currentPlayer);
     if (gameActive && vsAI && currentPlayer === "O") {
-      setTimeout(computerMove, 400);
+      setTimeout(computerMove, 500);
     }
   }
 
@@ -97,10 +109,95 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function computerMove() {
     if (!gameActive) return;
-    let emptyIndices = cells.map((val, idx) => val === null ? idx : null).filter(idx => idx !== null);
-    if (emptyIndices.length === 0) return;
-    let randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-    makeMove(randomIndex, "O");
+
+    let bestMove;
+    if (aiDifficulty === "easy") {
+      let empty = cells.map((v, i) => v === null ? i : null).filter(i => i !== null);
+      bestMove = empty[Math.floor(Math.random() * empty.length)];
+    } else if (aiDifficulty === "medium") {
+      bestMove = findWinningMove("O") || findWinningMove("X") || randomMove();
+    } else {
+      bestMove = minimax(cells, "O").index;
+    }
+
+    makeMove(bestMove, "O");
+  }
+
+  function findWinningMove(player) {
+    for (let i = 0; i < 9; i++) {
+      if (cells[i] === null) {
+        cells[i] = player;
+        if (checkWinner()) {
+          cells[i] = null;
+          return i;
+        }
+        cells[i] = null;
+      }
+    }
+    return null;
+  }
+
+  function randomMove() {
+    let empty = cells.map((v, i) => v === null ? i : null).filter(i => i !== null);
+    return empty[Math.floor(Math.random() * empty.length)];
+  }
+
+  function minimax(newBoard, player) {
+    const huPlayer = "X";
+    const aiPlayer = "O";
+    const availSpots = newBoard.map((val, i) => val === null ? i : null).filter(i => i !== null);
+
+    if (checkWinnerBoard(newBoard, huPlayer)) return { score: -10 };
+    if (checkWinnerBoard(newBoard, aiPlayer)) return { score: 10 };
+    if (availSpots.length === 0) return { score: 0 };
+
+    let moves = [];
+
+    for (let i = 0; i < availSpots.length; i++) {
+      let move = {};
+      move.index = availSpots[i];
+      newBoard[availSpots[i]] = player;
+
+      let result = minimax(newBoard, player === aiPlayer ? huPlayer : aiPlayer);
+      move.score = result.score;
+
+      newBoard[availSpots[i]] = null;
+      moves.push(move);
+    }
+
+    let bestMove;
+    if (player === aiPlayer) {
+      let bestScore = -10000;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    } else {
+      let bestScore = 10000;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    }
+
+    return moves[bestMove];
+  }
+
+  function checkWinnerBoard(b, player) {
+    return (
+      (b[0] === player && b[1] === player && b[2] === player) ||
+      (b[3] === player && b[4] === player && b[5] === player) ||
+      (b[6] === player && b[7] === player && b[8] === player) ||
+      (b[0] === player && b[3] === player && b[6] === player) ||
+      (b[1] === player && b[4] === player && b[7] === player) ||
+      (b[2] === player && b[5] === player && b[8] === player) ||
+      (b[0] === player && b[4] === player && b[8] === player) ||
+      (b[2] === player && b[4] === player && b[6] === player)
+    );
   }
 
   function restartGame() {

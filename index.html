@@ -11,34 +11,32 @@
     <h1>Tic Tac Toe 🎮</h1>
 
     <!-- Theme Toggle -->
-    <label class="toggle">
+    <label>
       <input type="checkbox" id="themeToggle" />
-      <span>🌙 Dark Mode</span>
+      🌙 Dark Mode
     </label>
 
-    <!-- Scoreboard -->
+    <!-- Score -->
     <p id="score">Score - X: <span id="scoreX">0</span> | O: <span id="scoreO">0</span></p>
 
-    <!-- AI Options -->
-    <div class="ai-options">
-      <label>
-        <input type="checkbox" id="aiToggle" />
-        vs Computer
-      </label>
-      <select id="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="expert">Expert</option>
-      </select>
-    </div>
+    <!-- AI Toggle and Difficulty -->
+    <label>
+      <input type="checkbox" id="aiToggle" />
+      vs Computer
+    </label>
+    <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="expert">Expert</option>
+    </select>
 
-    <!-- Status -->
+    <!-- Game Status -->
     <div id="status">Player X's Turn</div>
 
     <!-- Game Board -->
     <div id="board" class="board"></div>
 
-    <!-- Restart -->
+    <!-- Restart Button -->
     <button id="restart">🔄 Restart Game</button>
   </div>
 

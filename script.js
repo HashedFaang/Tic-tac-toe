@@ -1,21 +1,116 @@
-/* === script.js === */
 document.addEventListener("DOMContentLoaded", () => {
   const board = document.getElementById("board");
-  const status = document.getElementById("status");
+  const statusText = document.getElementById("status");
   const restartBtn = document.getElementById("restart");
-  const themeToggle = document.getElementById("theme-toggle");
+  const darkToggle = document.getElementById("themeToggle");
 
   let currentPlayer = "X";
+  let cells = Array(9).fill(null);
   let gameActive = true;
-  const gameState = Array(9).fill("");
+  let scores = { X: 0, O: 0 };
+  let vsAI = false;
 
-  const winConditions = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6]
-  ];
+  const clickSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav");
+  const winSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2011.wav");
+  const tieSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-video-game-bonus-collect-316.wav");
 
-  function createBoard() {
+  const scoreDisplay = document.createElement("div");
+  scoreDisplay.id = "scoreboard";
+  scoreDisplay.innerHTML = `
+    <p>Score - X: <span id="scoreX">0</span> | O: <span id="scoreO">0</span></p>
+    <label style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;">
+      <input type="checkbox" id="aiToggle"> vs Computer
+    </label>
+  `;
+  document.querySelector(".container").insertBefore(scoreDisplay, board);
+
+  const aiToggle = document.getElementById("aiToggle");
+  aiToggle.addEventListener("change", () => {
+    vsAI = aiToggle.checked;
+    restartGame();
+  });
+
+  function checkWinner() {
+    const winCombos = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    for (let combo of winCombos) {
+      const [a,b,c] = combo;
+      if (cells[a] && cells[a] === cells[b] && cells[b] === cells[c]) {
+        highlightWinner([a, b, c]);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function highlightWinner(indices) {
+    indices.forEach(index => {
+      const cell = board.children[index];
+      cell.classList.add("winner");
+    });
+  }
+
+  function updateScore(player) {
+    scores[player]++;
+    document.getElementById("scoreX").textContent = scores["X"];
+    document.getElementById("scoreO").textContent = scores["O"];
+  }
+
+  function isDraw() {
+    return cells.every(cell => cell);
+  }
+
+  function handleClick(e) {
+    const index = e.target.dataset.index;
+    if (!gameActive || cells[index]) return;
+    makeMove(index, currentPlayer);
+    if (gameActive && vsAI && currentPlayer === "O") {
+      setTimeout(computerMove, 500);
+    }
+  }
+
+  function makeMove(index, player) {
+    if (!gameActive || cells[index]) return;
+    cells[index] = player;
+    board.children[index].textContent = player;
+    clickSound.play();
+
+    if (checkWinner()) {
+      winSound.play();
+      statusText.textContent = `🎉 Player ${player} Wins! 🏆`;
+      updateScore(player);
+      gameActive = false;
+    } else if (isDraw()) {
+      tieSound.play();
+      statusText.textContent = "😐 It's a Tie! 🤝";
+      gameActive = false;
+    } else {
+      currentPlayer = player === "X" ? "O" : "X";
+      statusText.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+  }
+
+  function computerMove() {
+    if (!gameActive) return;
+    let emptyIndices = cells.map((val, idx) => val === null ? idx : null).filter(idx => idx !== null);
+    if (emptyIndices.length === 0) return;
+    let randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+    makeMove(randomIndex, "O");
+  }
+
+  function restartGame() {
+    cells = Array(9).fill(null);
+    currentPlayer = "X";
+    statusText.textContent = "Player X's Turn";
+    gameActive = true;
+    board.innerHTML = "";
+    initBoard();
+  }
+
+  function initBoard() {
     for (let i = 0; i < 9; i++) {
       const cell = document.createElement("div");
       cell.classList.add("cell");
@@ -25,50 +120,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function handleClick(e) {
-    const index = e.target.dataset.index;
-    if (gameState[index] !== "" || !gameActive) return;
-
-    gameState[index] = currentPlayer;
-    e.target.textContent = currentPlayer;
-
-    if (checkWinner()) {
-      status.textContent = `🎉 Player ${currentPlayer} wins!`;
-      gameActive = false;
-      return;
-    }
-
-    if (!gameState.includes("")) {
-      status.textContent = "It's a tie!";
-      gameActive = false;
-      return;
-    }
-
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-    status.textContent = `Player ${currentPlayer}'s Turn`;
-  }
-
-  function checkWinner() {
-    return winConditions.some(cond => {
-      const [a, b, c] = cond;
-      return gameState[a] && gameState[a] === gameState[b] && gameState[b] === gameState[c];
-    });
-  }
-
-  function restartGame() {
-    gameState.fill("");
-    board.innerHTML = "";
-    currentPlayer = "X";
-    gameActive = true;
-    status.textContent = `Player ${currentPlayer}'s Turn`;
-    createBoard();
-  }
-
-  themeToggle.addEventListener("change", () => {
+  restartBtn.addEventListener("click", restartGame);
+  darkToggle.addEventListener("change", () => {
     document.body.classList.toggle("dark");
   });
 
-  restartBtn.addEventListener("click", restartGame);
-
-  createBoard();
+  initBoard();
 });

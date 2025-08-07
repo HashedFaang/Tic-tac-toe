@@ -2,25 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1>Tic Tac Toe</h1>
-    <label class="switch">
-      <input type="checkbox" id="theme-toggle" />
-      <span class="slider"></span>
-      <span class="mode-label">Dark Mode</span>
+    <h1>Tic Tac Toe 🎮</h1>
+
+    <!-- Theme Toggle -->
+    <label class="toggle">
+      <input type="checkbox" id="themeToggle" />
+      <span>🌙 Dark Mode</span>
     </label>
-    <p id="status">Player X's Turn</p>
-    <div class="board" id="board"></div>
-    <button id="restart">Restart Game</button>
+
+    <!-- Status Display -->
+    <div id="status">Player X's Turn</div>
+
+    <!-- Game Board -->
+    <div id="board" class="board"></div>
+
+    <!-- Restart Button -->
+    <button id="restart">🔄 Restart Game</button>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>

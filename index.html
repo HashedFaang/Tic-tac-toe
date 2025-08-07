@@ -1,27 +1,26 @@
+/* === index.html === */
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tic Tac Toe - Modern</title>
+  <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
     <h1>Tic Tac Toe</h1>
-    <div class="theme-toggle">
-      <label class="switch">
-        <input type="checkbox" id="themeToggle">
-        <span class="slider"></span>
-      </label>
-      <span class="theme-label">Dark Mode</span>
-    </div>
+    <label class="switch">
+      <input type="checkbox" id="theme-toggle" />
+      <span class="slider"></span>
+      <span class="mode-label">Dark Mode</span>
+    </label>
+    <p id="status">Player X's Turn</p>
     <div class="board" id="board"></div>
-    <div class="info">
-      <p id="status">Player X's Turn</p>
-      <button id="restartBtn">Restart Game</button>
-    </div>
+    <button id="restart">Restart Game</button>
   </div>
   <script src="script.js"></script>
 </body>

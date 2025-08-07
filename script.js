@@ -123,19 +123,18 @@ document.addEventListener("DOMContentLoaded", () => {
     makeMove(bestMove, "O");
   }
 
-  function findWinningMove(player) {
-    for (let i = 0; i < 9; i++) {
-      if (cells[i] === null) {
-        cells[i] = player;
-        if (checkWinner()) {
-          cells[i] = null;
-          return i;
-        }
-        cells[i] = null;
+function findWinningMove(player) {
+  for (let i = 0; i < 9; i++) {
+    if (cells[i] === null) {
+      let tempBoard = [...cells];  // Copy of board
+      tempBoard[i] = player;
+      if (checkWinnerBoard(tempBoard, player)) {
+        return i;
       }
     }
-    return null;
   }
+  return null;
+}
 
   function randomMove() {
     let empty = cells.map((v, i) => v === null ? i : null).filter(i => i !== null);

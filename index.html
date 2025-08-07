@@ -16,6 +16,19 @@
       <span>🌙 Dark Mode</span>
     </label>
 
+    <!-- Scoreboard + AI Options -->
+    <div id="scoreboard">
+      <p>Score - X: <span id="scoreX">0</span> | O: <span id="scoreO">0</span></p>
+      <label style="display:inline-flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="aiToggle"> vs Computer
+      </label>
+      <select id="difficulty" style="margin-left:10px;">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="expert">Expert</option>
+      </select>
+    </div>
+
     <!-- Status Display -->
     <div id="status">Player X's Turn</div>
 

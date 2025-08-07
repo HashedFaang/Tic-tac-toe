@@ -1,60 +1,76 @@
-const board = document.getElementById('board');
-const message = document.getElementById('message');
+document.addEventListener("DOMContentLoaded", () => {
+  const cells = document.querySelectorAll(".cell");
+  const statusText = document.getElementById("status");
+  const restartBtn = document.getElementById("restart");
+  const toggleBtn = document.querySelector(".toggle-button");
+  const body = document.body;
 
-let currentPlayer = 'X';
-let cells = [];
-let gameActive = true;
+  let currentPlayer = "X";
+  let board = ["", "", "", "", "", "", "", "", ""];
+  let gameActive = true;
 
-function createBoard() {
-  board.innerHTML = '';
-  cells = Array(9).fill('');
-  gameActive = true;
-  currentPlayer = 'X';
-  message.textContent = '';
-
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
-    cell.dataset.index = i;
-    cell.addEventListener('click', handleClick);
-    board.appendChild(cell);
-  }
-}
-
-function handleClick(event) {
-  const index = event.target.dataset.index;
-
-  if (!gameActive || cells[index] !== '') return;
-
-  cells[index] = currentPlayer;
-  event.target.textContent = currentPlayer;
-
-  if (checkWinner()) {
-    message.textContent = `🎉 Player ${currentPlayer} wins!`;
-    gameActive = false;
-  } else if (!cells.includes('')) {
-    message.textContent = "It's a tie!";
-    gameActive = false;
-  } else {
-    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-  }
-}
-
-function checkWinner() {
-  const winPatterns = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-    [0, 4, 8], [2, 4, 6]             // diagonals
+  const winConditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
   ];
 
-  return winPatterns.some(pattern =>
-    pattern.every(index => cells[index] === currentPlayer)
-  );
-}
+  function checkWinner() {
+    for (let condition of winConditions) {
+      const [a, b, c] = condition;
+      if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+        gameActive = false;
+        highlightWin(condition);
+        statusText.textContent = `🎉 Player ${board[a]} wins!`;
+        return;
+      }
+    }
+    if (!board.includes("")) {
+      gameActive = false;
+      statusText.textContent = "It's a tie! 🤝";
+    }
+  }
 
-function resetGame() {
-  createBoard();
-}
+  function highlightWin(condition) {
+    condition.forEach(index => {
+      cells[index].classList.add("win");
+    });
+  }
 
-// Initialize game
-createBoard();
+  function handleClick(e) {
+    const index = e.target.getAttribute("data-index");
+    if (board[index] !== "" || !gameActive) return;
+
+    board[index] = currentPlayer;
+    e.target.textContent = currentPlayer;
+    e.target.classList.add(currentPlayer);
+    checkWinner();
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    if (gameActive) statusText.textContent = `Player ${currentPlayer}'s turn`;
+  }
+
+  function restartGame() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    gameActive = true;
+    currentPlayer = "X";
+    statusText.textContent = `Player X's turn`;
+    cells.forEach(cell => {
+      cell.textContent = "";
+      cell.classList.remove("X", "O", "win");
+    });
+  }
+
+  function toggleTheme() {
+    body.classList.toggle("dark-mode");
+  }
+
+  cells.forEach(cell => cell.addEventListener("click", handleClick));
+  restartBtn.addEventListener("click", restartGame);
+  toggleBtn.addEventListener("click", toggleTheme);
+});

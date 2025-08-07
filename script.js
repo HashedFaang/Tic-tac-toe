@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let scores = { X: 0, O: 0 };
   let vsAI = false;
 
-  const clickSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.wav");
-  const winSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2011.wav");
-  const tieSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-video-game-bonus-collect-316.wav");
+  const clickSound = new Audio("https://cdn.jsdelivr.net/gh/harshitsrepo/tic-sounds/click.mp3");
+  const winSound = new Audio("https://cdn.jsdelivr.net/gh/harshitsrepo/tic-sounds/win.mp3");
+  const tieSound = new Audio("https://cdn.jsdelivr.net/gh/harshitsrepo/tic-sounds/tie.mp3");
 
   const scoreDisplay = document.createElement("div");
   scoreDisplay.id = "scoreboard";
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!gameActive || cells[index]) return;
     makeMove(index, currentPlayer);
     if (gameActive && vsAI && currentPlayer === "O") {
-      setTimeout(computerMove, 500);
+      setTimeout(computerMove, 400);
     }
   }
 
@@ -83,10 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
       statusText.textContent = `🎉 Player ${player} Wins! 🏆`;
       updateScore(player);
       gameActive = false;
+      setTimeout(() => alert(`🎉 Player ${player} wins the game!`), 300);
     } else if (isDraw()) {
       tieSound.play();
       statusText.textContent = "😐 It's a Tie! 🤝";
       gameActive = false;
+      setTimeout(() => alert("😐 It's a tie!"), 300);
     } else {
       currentPlayer = player === "X" ? "O" : "X";
       statusText.textContent = `Player ${currentPlayer}'s Turn`;
